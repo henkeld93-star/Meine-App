@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <!-- 3. GYM TAB -->
+       <!-- 3. GYM TAB -->
         <div id="gym-tab" class="tab-content">
             <h2>Gym Planer</h2>
             <button id="workout-toggle-btn" class="workout-btn start" onclick="toggleWorkout()">Workout Starten 🏋️</button>
@@ -61,20 +61,22 @@
             </div>
 
             <div class="gym-input-group">
-                <select id="exercise-select">
+                <select id="exercise-select" style="width: 100%; margin-bottom: 10px;">
                     <option value="Bankdrücken">Bankdrücken</option>
                     <option value="Kniebeugen">Kniebeugen</option>
                     <option value="Kreuzheben">Kreuzheben</option>
                     <option value="Latzug">Latzug</option>
                     <option value="Schulterdrücken">Schulterdrücken</option>
                 </select>
-                <div class="input-container" style="margin-top: 10px;">
+                
+                <!-- Hier stehen kg, Wdh und + perfekt nebeneinander -->
+                <div class="gym-row">
                     <input type="number" id="gym-weight" placeholder="kg">
                     <input type="number" id="gym-reps" placeholder="Wdh">
                     <button onclick="addGymSet()">+</button>
                 </div>
             </div>
-            <ul id="gym-log-list"></ul>
+            <ul id="gym-log-list" style="margin-top: 15px;"></ul>
         </div>
 
         <!-- 4. JOURNAL TAB -->
