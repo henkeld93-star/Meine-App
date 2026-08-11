@@ -91,18 +91,111 @@ function renderTodos() {
 }
 
 // --- 2. KALENDER LOGIK ---
-function addEvent() {
-    let date = document.getElementById('event-date').value;
-    let title = document.getElementById('event-title').value.trim();
+let currentCalendarDate = new Date();
+let selectedDateStr = "";
 
-    if (date === "" || title === "") {
-        alert("Bitte Datum und Titel eingeben!");
+// Kalender beim Start initialisieren
+document.addEventListener("DOMContentLoaded", () => {
+    // Rendert den Kalender beim ersten Laden
+    renderCalendar();
+});
+
+function renderCalendar() {
+    let monthYearDisplay = document.getElementById('month-year-display');
+    let daysContainer = document.getElementById('calendar-days');
+    
+    // Falls die HTML-Elemente für das Raster existieren
+    if (!monthYearDisplay || !daysContainer) return;
+
+    daysContainer.innerHTML = "";
+
+    let year = currentCalendarDate.getFullYear();
+    let month = currentCalendarDate.getMonth();
+
+    // Monatsname + Jahr anzeigen
+    let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+    monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
+    // Erster Tag des Monats & Anzahl Tage im Monat
+    let firstDayIndex = new Date(year, month, 1).getDay();
+    // Sonntag ist Index 0 in JS -> auf Montag anpassen (Mo=0, So=6)
+    let adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+    let totalDays = new Date(year, month + 1, 0).getDate();
+
+    // Leere Felder für Tage des vorherigen Monats
+    for (let i = 0; i < adjustedFirstDay; i++) {
+        let emptyDiv = document.createElement('div');
+        emptyDiv.className = 'calendar-day empty';
+        daysContainer.appendChild(emptyDiv);
+    }
+
+    // Tage des aktuellen Monats zeichnen
+    for (let day = 1; day <= totalDays; day++) {
+        let dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        dayDiv.textContent = day;
+
+        // Formatiertes Datum für diesen Tag (YYYY-MM-DD)
+        let formattedDay = String(day).padStart(2, '0');
+        let formattedMonth = String(month + 1).padStart(2, '0');
+        let dateString = `${year}-${formattedMonth}-${formattedDay}`;
+
+        // Prüfen, ob für diesen Tag Termine existieren
+        let hasEvents = events.some(e => e.date === dateString);
+        if (hasEvents) {
+            dayDiv.classList.add('has-event');
+        }
+
+        // Klick auf Tag
+        dayDiv.onclick = () => selectCalendarDay(dateString, dayDiv);
+
+        daysContainer.appendChild(dayDiv);
+    }
+
+    renderEvents();
+}
+
+// Pfeile fürs Monat-Wechseln
+function prevMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+}
+
+function nextMonth() {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+}
+
+// Tag auswählen
+function selectCalendarDay(dateString, element) {
+    selectedDateStr = dateString;
+    
+    document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+
+    let titleLabel = document.getElementById('selected-day-label');
+    if (titleLabel) {
+        let formatted = new Date(dateString).toLocaleDateString('de-DE');
+        titleLabel.textContent = `Termine am ${formatted}:`;
+    }
+
+    renderEvents();
+}
+
+// Termin hinzufügen
+function addEvent() {
+    let input = document.getElementById('event-title');
+    let title = input ? input.value.trim() : "";
+
+    let dateToUse = selectedDateStr || document.getElementById('event-date')?.value;
+
+    if (!dateToUse || title === "") {
+        alert("Bitte erst einen Tag im Kalender anklicken und einen Termin eingeben!");
         return;
     }
 
-    events.push({ date: date, title: title });
-    document.getElementById('event-date').value = "";
-    document.getElementById('event-title').value = "";
+    events.push({ date: dateToUse, title: title });
+    if (input) input.value = "";
 
     saveAndRenderEvents();
 }
@@ -114,7 +207,7 @@ function deleteEvent(index) {
 
 function saveAndRenderEvents() {
     localStorage.setItem('my_events', JSON.stringify(events));
-    renderEvents();
+    renderCalendar();
 }
 
 function renderEvents() {
@@ -122,20 +215,24 @@ function renderEvents() {
     if (!list) return;
     list.innerHTML = "";
 
-    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Zeige nur Termine für den aktuell ausgewählten Tag (oder alle, wenn kein Tag gewählt)
+    let filteredEvents = selectedDateStr 
+        ? events.filter(e => e.date === selectedDateStr) 
+        : events;
 
-    events.forEach((eventItem, index) => {
+    filteredEvents.forEach((eventItem) => {
+        let originalIndex = events.indexOf(eventItem);
         let li = document.createElement('li');
 
         let formattedDate = new Date(eventItem.date).toLocaleDateString('de-DE');
 
         let span = document.createElement('span');
-        span.textContent = `${formattedDate}: ${eventItem.title}`;
+        span.textContent = `${eventItem.title} (${formattedDate})`;
 
         let delBtn = document.createElement('button');
         delBtn.textContent = '✖';
         delBtn.className = 'delete-btn';
-        delBtn.onclick = () => deleteEvent(index);
+        delBtn.onclick = () => deleteEvent(originalIndex);
 
         li.appendChild(span);
         li.appendChild(delBtn);
