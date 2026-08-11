@@ -180,141 +180,79 @@ body{
             } 
                               
 /* --- KALENDER STYLING --- */
-
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 15px;
-    margin-bottom: 20px;
     background-color: #1a1a1a;
-    padding: 10px 15px;
-    border-radius: 12px;
-    border: 1px solid #333;
-}
-
-.calendar-header h3 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.calendar-header button {
-    background: #2a2a2a;
-    border: none;
-    color: white;
-    padding: 8px 14px;
+    padding: 10px;
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.calendar-header button:hover {
-    background: #007bff;
-}
-
-/* WICHTIG: Das macht Mo-So Nebeneinander! */
-.weekdays-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 8px;
-    text-align: center;
     margin-bottom: 10px;
 }
 
-.weekdays-grid div {
+.calendar-header button {
+    background: #333;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
     font-weight: bold;
     color: #888;
+    margin-bottom: 8px;
+    font-size: 13px;
 }
 
-/* Das macht die Zahlen in 7 Spalten */
-.days-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 8px;
-    text-align: center;
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
-.day {
-    background-color: #1a1a1a;
-    padding: 10px 0;
-    border-radius: 10px;
+.calendar-day {
+    aspect-ratio: 1;
+    background-color: #222;
     border: 1px solid #333;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 14px;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.day.today {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    border-color: #007bff;
+.calendar-day:hover {
+    background-color: #333;
 }
 
-.day.empty {
+.calendar-day.empty {
     background-color: transparent;
     border: none;
-}
-/* --- TERMIN BEREICH STYLING --- */
-
-.event-section {
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #333;
+    cursor: default;
 }
 
-.event-section h4 {
-    margin: 0 0 10px 0;
-    color: #007bff;
-    font-size: 16px;
-}
-
-.event-input-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-#event-input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background-color: #1a1a1a;
-    color: white;
-}
-
-.event-input-container button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
+.calendar-day.selected {
+    border-color: #007bff;
+    background-color: #007bff33;
     font-weight: bold;
-    cursor: pointer;
 }
 
-#event-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#event-list li {
-    background-color: #1a1a1a;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-}
-
-/* Ausgewählter Tag im Kalender bekommt einen Rahmen */
-.day.selected {
-    border-color: #007bff !important;
-    background-color: #222;
+.calendar-day.has-event::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 50%;
+    margin-top: 2px;
 }
 /* --- GYM PLANER STYLING --- */
 
