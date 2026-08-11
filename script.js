@@ -1,18 +1,21 @@
-// --- INITIALISIERUNG / DATEN LADEN ---
+// --- DATEN AUS LOCALSTORAGE LADEN ---
 let todos = JSON.parse(localStorage.getItem('my_todos')) || [];
 let events = JSON.parse(localStorage.getItem('my_events')) || [];
 let gymLogs = JSON.parse(localStorage.getItem('my_gymLogs')) || [];
 let journalEntries = JSON.parse(localStorage.getItem('my_journalEntries')) || [];
+
+let currentCalendarDate = new Date();
+let selectedDateStr = "";
 
 let workoutActive = false;
 let workoutTimerInterval = null;
 let workoutSeconds = 0;
 let selectedMood = "";
 
-// Beim Laden der Seite alle gespeicherten Daten anzeigen
+// Beim Start ausführen
 document.addEventListener("DOMContentLoaded", () => {
     renderTodos();
-    renderEvents();
+    renderCalendar();
     renderGymLogs();
     renderJournalEntries();
 
@@ -22,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// --- TABS WECHSELN ---
-function openTab(tabId) {
+// --- TAB WECHSELN ---
+function openTab(tabId, btnElement) {
     let contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active'));
 
@@ -31,7 +34,12 @@ function openTab(tabId) {
     buttons.forEach(btn => btn.classList.remove('active'));
 
     document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    if (btnElement) btnElement.classList.add('active');
+
+    // Falls Kalender geöffnet wird, Raster neu zeichnen
+    if (tabId === 'kalender-tab' || tabId === 'kalender') {
+        renderCalendar();
+    }
 }
 
 // --- 1. TO-DO LOGIK ---
@@ -91,20 +99,10 @@ function renderTodos() {
 }
 
 // --- 2. KALENDER LOGIK ---
-let currentCalendarDate = new Date();
-let selectedDateStr = "";
-
-// Kalender beim Start initialisieren
-document.addEventListener("DOMContentLoaded", () => {
-    // Rendert den Kalender beim ersten Laden
-    renderCalendar();
-});
-
 function renderCalendar() {
     let monthYearDisplay = document.getElementById('month-year-display');
     let daysContainer = document.getElementById('calendar-days');
     
-    // Falls die HTML-Elemente für das Raster existieren
     if (!monthYearDisplay || !daysContainer) return;
 
     daysContainer.innerHTML = "";
@@ -112,41 +110,36 @@ function renderCalendar() {
     let year = currentCalendarDate.getFullYear();
     let month = currentCalendarDate.getMonth();
 
-    // Monatsname + Jahr anzeigen
     let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
     monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
 
-    // Erster Tag des Monats & Anzahl Tage im Monat
     let firstDayIndex = new Date(year, month, 1).getDay();
-    // Sonntag ist Index 0 in JS -> auf Montag anpassen (Mo=0, So=6)
     let adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
     let totalDays = new Date(year, month + 1, 0).getDate();
 
-    // Leere Felder für Tage des vorherigen Monats
     for (let i = 0; i < adjustedFirstDay; i++) {
         let emptyDiv = document.createElement('div');
         emptyDiv.className = 'calendar-day empty';
         daysContainer.appendChild(emptyDiv);
     }
 
-    // Tage des aktuellen Monats zeichnen
     for (let day = 1; day <= totalDays; day++) {
         let dayDiv = document.createElement('div');
         dayDiv.className = 'calendar-day';
         dayDiv.textContent = day;
 
-        // Formatiertes Datum für diesen Tag (YYYY-MM-DD)
         let formattedDay = String(day).padStart(2, '0');
         let formattedMonth = String(month + 1).padStart(2, '0');
         let dateString = `${year}-${formattedMonth}-${formattedDay}`;
 
-        // Prüfen, ob für diesen Tag Termine existieren
-        let hasEvents = events.some(e => e.date === dateString);
-        if (hasEvents) {
+        if (events.some(e => e.date === dateString)) {
             dayDiv.classList.add('has-event');
         }
 
-        // Klick auf Tag
+        if (selectedDateStr === dateString) {
+            dayDiv.classList.add('selected');
+        }
+
         dayDiv.onclick = () => selectCalendarDay(dateString, dayDiv);
 
         daysContainer.appendChild(dayDiv);
@@ -155,7 +148,6 @@ function renderCalendar() {
     renderEvents();
 }
 
-// Pfeile fürs Monat-Wechseln
 function prevMonth() {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
     renderCalendar();
@@ -166,7 +158,6 @@ function nextMonth() {
     renderCalendar();
 }
 
-// Tag auswählen
 function selectCalendarDay(dateString, element) {
     selectedDateStr = dateString;
     
@@ -175,26 +166,28 @@ function selectCalendarDay(dateString, element) {
 
     let titleLabel = document.getElementById('selected-day-label');
     if (titleLabel) {
-        let formatted = new Date(dateString).toLocaleDateString('de-DE');
-        titleLabel.textContent = `Termine am ${formatted}:`;
+        let parts = dateString.split('-');
+        titleLabel.textContent = `Termine am ${parts[2]}.${parts[1]}.${parts[0]}:`;
     }
 
     renderEvents();
 }
 
-// Termin hinzufügen
 function addEvent() {
     let input = document.getElementById('event-title');
     let title = input ? input.value.trim() : "";
 
-    let dateToUse = selectedDateStr || document.getElementById('event-date')?.value;
-
-    if (!dateToUse || title === "") {
-        alert("Bitte erst einen Tag im Kalender anklicken und einen Termin eingeben!");
+    if (!selectedDateStr) {
+        alert("Bitte zuerst einen Tag im Kalender anklicken!");
         return;
     }
 
-    events.push({ date: dateToUse, title: title });
+    if (title === "") {
+        alert("Bitte einen Titel für den Termin eingeben!");
+        return;
+    }
+
+    events.push({ date: selectedDateStr, title: title });
     if (input) input.value = "";
 
     saveAndRenderEvents();
@@ -215,7 +208,6 @@ function renderEvents() {
     if (!list) return;
     list.innerHTML = "";
 
-    // Zeige nur Termine für den aktuell ausgewählten Tag (oder alle, wenn kein Tag gewählt)
     let filteredEvents = selectedDateStr 
         ? events.filter(e => e.date === selectedDateStr) 
         : events;
@@ -224,7 +216,8 @@ function renderEvents() {
         let originalIndex = events.indexOf(eventItem);
         let li = document.createElement('li');
 
-        let formattedDate = new Date(eventItem.date).toLocaleDateString('de-DE');
+        let parts = eventItem.date.split('-');
+        let formattedDate = `${parts[2]}.${parts[1]}.${parts[0]}`;
 
         let span = document.createElement('span');
         span.textContent = `${eventItem.title} (${formattedDate})`;
@@ -247,9 +240,11 @@ function toggleWorkout() {
 
     if (!workoutActive) {
         workoutActive = true;
-        btn.textContent = 'Workout Beenden ⏹️';
-        btn.className = 'workout-btn stop';
-        timerDiv.style.display = 'block';
+        if (btn) {
+            btn.textContent = 'Workout Beenden ⏹️';
+            btn.className = 'workout-btn stop';
+        }
+        if (timerDiv) timerDiv.style.display = 'block';
 
         workoutSeconds = 0;
         updateTimerDisplay();
@@ -260,12 +255,14 @@ function toggleWorkout() {
         }, 1000);
     } else {
         workoutActive = false;
-        btn.textContent = 'Workout Starten 🏋️';
-        btn.className = 'workout-btn start';
+        if (btn) {
+            btn.textContent = 'Workout Starten 🏋️';
+            btn.className = 'workout-btn start';
+        }
 
         clearInterval(workoutTimerInterval);
         alert(`Klasse Workout! Gesamtzeit: ${formatTime(workoutSeconds)}`);
-        timerDiv.style.display = 'none';
+        if (timerDiv) timerDiv.style.display = 'none';
     }
 }
 
@@ -281,9 +278,15 @@ function formatTime(totalSeconds) {
 }
 
 function addGymSet() {
-    let exercise = document.getElementById('exercise-select').value;
-    let weight = document.getElementById('gym-weight').value;
-    let reps = document.getElementById('gym-reps').value;
+    let exerciseEl = document.getElementById('exercise-select');
+    let weightEl = document.getElementById('gym-weight');
+    let repsEl = document.getElementById('gym-reps');
+
+    if (!exerciseEl || !weightEl || !repsEl) return;
+
+    let exercise = exerciseEl.value;
+    let weight = weightEl.value;
+    let reps = repsEl.value;
 
     if (weight === "" || reps === "") {
         alert("Bitte gib Gewicht und Wiederholungen ein!");
@@ -299,8 +302,8 @@ function addGymSet() {
 
     gymLogs.unshift(logEntry);
 
-    document.getElementById('gym-weight').value = "";
-    document.getElementById('gym-reps').value = "";
+    weightEl.value = "";
+    repsEl.value = "";
 
     saveAndRenderGymLogs();
 }
@@ -357,29 +360,29 @@ function selectMood(mood, btnElement) {
 }
 
 function saveJournalEntry() {
-    let date = document.getElementById('journal-date').value;
-    let notes = document.getElementById('journal-notes').value.trim();
-    let grateful = document.getElementById('journal-grateful').value.trim();
-    let goals = document.getElementById('journal-goals').value.trim();
+    let dateInput = document.getElementById('journal-date');
+    let notesInput = document.getElementById('journal-notes');
+    let gratefulInput = document.getElementById('journal-grateful');
+    let goalsInput = document.getElementById('journal-goals');
 
-    if (!date) {
+    if (!dateInput || !dateInput.value) {
         alert("Bitte wähle ein Datum aus!");
         return;
     }
 
     let entry = {
-        date: new Date(date).toLocaleDateString('de-DE'),
-        notes: notes || "Keine Notizen",
-        grateful: grateful || "Nichts eingetragen",
-        goals: goals || "Nichts eingetragen",
+        date: new Date(dateInput.value).toLocaleDateString('de-DE'),
+        notes: notesInput ? notesInput.value.trim() || "Keine Notizen" : "Keine Notizen",
+        grateful: gratefulInput ? gratefulInput.value.trim() || "Nichts eingetragen" : "Nichts eingetragen",
+        goals: goalsInput ? goalsInput.value.trim() || "Nichts eingetragen" : "Nichts eingetragen",
         mood: selectedMood || "Keine Stimmung"
     };
 
     journalEntries.unshift(entry);
 
-    document.getElementById('journal-notes').value = "";
-    document.getElementById('journal-grateful').value = "";
-    document.getElementById('journal-goals').value = "";
+    if (notesInput) notesInput.value = "";
+    if (gratefulInput) gratefulInput.value = "";
+    if (goalsInput) goalsInput.value = "";
     selectedMood = "";
     document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
 
