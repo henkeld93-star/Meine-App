@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine All-in-One App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Navigation Buttons -->
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="openTab('todo-tab')">To-Do</button>
+            <button class="nav-btn" onclick="openTab('calendar-tab')">Kalender</button>
+            <button class="nav-btn" onclick="openTab('gym-tab')">GYM</button>
+            <button class="nav-btn" onclick="openTab('journal-tab')">Journal</button>
+        </div>
+
+        <!-- 1. Raum: To-Do Liste -->
+        <div id="todo-tab" class="tab-content active">
+            <h2>To-Do Liste</h2>
+            <div class="todo-input-container">
+                <input type="text" id="todo-input" placeholder="Neue Aufgabe eingeben...">
+                <button id="add-todo-btn" onclick="addTodo()">+</button>
+            </div>
+            <ul id="todo-list"></ul>
+        </div>
+
+        <!-- 2. Raum: Kalender -->
+        <div id="calendar-tab" class="tab-content">
+            <h2>Kalender</h2>
+            
+            <div class="calendar-header">
+                <button id="prev-month" onclick="changeMonth(-1)">❮</button>
+                <h3 id="month-year-display"></h3>
+                <button id="next-month" onclick="changeMonth(1)">❯</button>
+            </div>
+
+            <div class="weekdays-grid">
+                <div>Mo</div><div>Di</div><div>Mi</div><div>Do</div>
+                <div>Fr</div><div>Sa</div><div>So</div>
+            </div>
+
+            <div id="calendar-days" class="days-grid"></div>
+
+            <div id="event-section" class="event-section">
+                <h4 id="selected-date-text">Tag auswählen</h4>
+                <div class="event-input-container">
+                    <input type="text" id="event-input" placeholder="Neuer Termin...">
+                    <button onclick="addEvent()">+</button>
+                </div>
+                <ul id="event-list"></ul>
+            </div>
+        </div>
+
+        <!-- 3. Raum: GYM Planer -->
+        <div id="gym-tab" class="tab-content">
+            <h2>Gym Planer</h2>
+
+           <!-- Workout Start/Stop Status -->
+            <div class="workout-tracker-card">
+                <button id="workout-toggle-btn" class="workout-btn start" onclick="toggleWorkout()">Workout Starten 🏋️</button>
+                <div id="workout-timer" class="workout-timer">Workout aktiv: <span id="timer-display">00:00</span></div>
+            </div>
+
+            <!-- Übung eintragen -->
+            <div class="gym-input-section">
+                <label for="exercise-select">Übung wählen:</label>
+                <select id="exercise-select">
+                    <option value="Beinpresse">Beinpresse</option>
+                    <option value="Brustpresse">Brustpresse</option>
+                    <option value="Beinbeuger">Beinbeuger</option>
+                    <option value="Beinstrecker">Beinstrecker</option>
+                    <option value="Schulterpresse">Schulterpresse</option>
+                    <option value="Latzug">Latzug</option>
+                    <option value="Crunches-Maschine">Crunches-Maschine</option>
+                    <option value="Rückenstrecker">Rückenstrecker</option>
+                </select>
+
+                <div class="gym-input-row">
+                    <input type="number" id="gym-weight" placeholder="Gewicht (kg)" min="0" step="0.5">
+                    <input type="number" id="gym-reps" placeholder="Wdh." min="0">
+                </div>
+
+                <button class="add-set-btn" onclick="addGymSet()">Satz eintragen +</button>
+            </div>
+
+            <!-- Trainings-Verlauf / Protokoll -->
+            <div class="gym-history-section">
+                <h3>Trainingsfortschritt</h3>
+                <ul id="gym-log-list"></ul>
+            </div>
+        </div>
+
+        <!-- 4. Raum: Journal -->
+        <div id="journal-tab" class="tab-content">
+            <h2>Mein Journal</h2>
+            <!-- Eingabeformular -->
+            <div class="journal-form">
+                <div class="journal-field">
+                    <label>Datum:</label>
+                    <input type="date" id="journal-date">
+                </div>
+
+                <div class="journal-field">
+                    <label>Gedanken & Notizen:</label>
+                    <textarea id="journal-notes" rows="3" placeholder="Wie war dein Tag?..."></textarea>
+                </div>
+
+                <div class="journal-field">
+                    <label>Wofür bin ich heute dankbar?</label>
+                    <textarea id="journal-grateful" rows="2" placeholder="3 Dinge, die gut waren..."></textarea>
+                </div>
+
+                <div class="journal-field">
+                    <label>Was will ich morgen schaffen?</label>
+                    <textarea id="journal-goals" rows="2" placeholder="Meine Ziele für morgen..."></textarea>
+                </div>
+
+                <!-- Emoji Auswahl -->
+                <div class="journal-field">
+                    <label>Wie fühlst du dich heute?</label>
+                    <div class="mood-selector">
+                        <button type="button" class="mood-btn" onclick="selectMood('🙂 Gut', this)">🙂 Gut</button>
+                        <button type="button" class="mood-btn" onclick="selectMood('😐 Mittel', this)">😐 Mittel</button>
+                        <button type="button" class="mood-btn" onclick="selectMood('🙁 Schlecht', this)">🙁 Schlecht</button>
+                    </div>
+                </div>
+
+                <button class="submit-journal-btn" onclick="saveJournalEntry()">Eintrag Abschicken 🚀</button>
+            </div>
+
+            <!-- Sammlung alter Einträge -->
+            <div class="journal-history">
+                <h3>Meine Einträge-Sammlung</h3>
+                <div id="journal-entries-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
