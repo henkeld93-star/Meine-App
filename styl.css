@@ -1,606 +1,275 @@
-body{
-    background-color: #121212;
-    font-family: Arial,  sans-serif;
-    color: white;
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    }
-    .app-container{
-        background-color: #1e1e1e;
-        width: 360px;
-        min-height: 600px;
-        border-radius: 25px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        .navigation{
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            }
-            .nav-btn{
-                flex: 1;
-                padding: 10px 5px;
-                background-color: #2a2a2a;
-                color: #888888;
-                border: none;
-                border-radius: 10px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                }
-                .nav-btn:hover {
-                    background-color: #3a3a3a;
-                    color: white;
-                    }
-                    .tab-content{
-                        display: none;
-                        background-color: #2a2a2a;
-                        padding: 20px;
-                        border-radius: 15px;
-                        margin-top: 15px;
-                        }
-.tab-content.active {
-    display: block;
-    }
-/* --- TO-DO SEITE STYLING --- */
-
-/* Der Eingabe-Container */
-.todo-input-container {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    margin-bottom: 20px;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Das Texteingabefeld */
-#todo-input {
+body {
+    background: #0f1015;
+    color: #e0e6ed;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 440px;
+    background: #181a20;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid #2a2d3d;
+}
+
+/* --- TABS --- */
+.tab-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 22px;
+    background: #101216;
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid #222634;
+}
+
+.tab-btn {
     flex: 1;
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 2px solid #3a3a3a;
-    background-color: #1a1a1a;
+    padding: 12px 6px;
+    border: none;
+    background: transparent;
+    color: #7a829e;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+h2 {
+    margin-bottom: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+/* --- INPUTS & BUTTONS --- */
+.input-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+input, select, textarea {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2c3040;
+    background: #101216;
     color: #ffffff;
     font-size: 14px;
     outline: none;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Effekt, wenn man ins Eingabefeld klickt */
-#todo-input:focus {
+input:focus, select:focus, textarea:focus {
     border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
 }
 
-/* Der Plus-Button */
-#add-todo-btn {
-    padding: 12px 20px;
-    background-color: #007bff;
-    color: white;
+button {
+    padding: 12px 18px;
     border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: bold;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
-/* Hover-Effekt für den Button */
-#add-todo-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px); /* Hüpft leicht nach oben! */
+button:active {
+    transform: scale(0.96);
 }
 
-/* Die Liste der Aufgaben */
-#todo-list {
+/* --- LISTENTREFFER & CARDS --- */
+ul {
     list-style: none;
-    padding: 0;
-    margin: 0;
 }
 
-/* Einzelne Listenelemente */
-#todo-list li {
-    background-color: #1a1a1a;
-    padding: 12px 16px;
+li {
+    background: #202430;
+    padding: 12px 14px;
     border-radius: 12px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid #333;
-    transition: all 0.2s ease;
+    border: 1px solid #2b3042;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-#todo-list li:hover {
-    border-color: #555;
-}
-
-/* Text der Aufgabe */
-#todo-list li span {
-    cursor: pointer;
-    font-size: 15px;
-    transition: color 0.2s ease;
-}
-
-/* Abgehakte Aufgabe */
-.completed {
+li.completed span {
     text-decoration: line-through;
-    color: #666 !important;
+    color: #5d667e;
 }
 
-/* Roter Löschen-Button (X) */
 .delete-btn {
-    background: #2a2a2a;
-    border: none;
+    background: rgba(255, 77, 77, 0.1);
     color: #ff4d4d;
-    font-size: 14px;
-    cursor: pointer;
     padding: 6px 10px;
     border-radius: 8px;
-    transition: all 0.2s ease;
+    font-size: 12px;
+    border: 1px solid rgba(255, 77, 77, 0.2);
 }
 
 .delete-btn:hover {
-    background-color: #ff4d4d;
+    background: #ff4d4d;
     color: white;
 }
-/* Durchgestrichener Text, wenn erledigt */
-.completed {
-    text-decoration: line-through;
-    color: #777;
-}
 
-/* Der rote Löschen-Button */
-.delete-btn {
-    background: none;
-    border: none;
-    color: #ff4d4d;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.delete-btn:hover {
-    background-color: rgba(255, 77, 77, 0.2);
-}
-     .todo-left{
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        }
-        .todo-checkbox{
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #007bff;
-            } 
-                              
-/* --- KALENDER STYLING --- */
-
+/* --- KALENDER DESIGN --- */
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    background-color: #1a1a1a;
-    padding: 10px 15px;
+    background: #202430;
+    padding: 10px 14px;
     border-radius: 12px;
-    border: 1px solid #333;
+    margin-bottom: 12px;
+    border: 1px solid #2b3042;
 }
 
 .calendar-header h3 {
-    margin: 0;
-    font-size: 18px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .calendar-header button {
-    background: #2a2a2a;
-    border: none;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
+    padding: 6px 12px;
+    background: #101216;
+    border: 1px solid #2c3040;
 }
 
-.calendar-header button:hover {
-    background: #007bff;
-}
-
-/* WICHTIG: Das macht Mo-So Nebeneinander! */
-.weekdays-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 8px;
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    margin-bottom: 10px;
+    font-weight: 700;
+    color: #5d667e;
+    margin-bottom: 8px;
+    font-size: 12px;
 }
 
-.weekdays-grid div {
-    font-weight: bold;
-    color: #888;
-}
-
-/* Das macht die Zahlen in 7 Spalten */
-.days-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 8px;
-    text-align: center;
-}
-
-.day {
-    background-color: #1a1a1a;
-    padding: 10px 0;
-    border-radius: 10px;
-    border: 1px solid #333;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.day.today {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-    border-color: #007bff;
-}
-
-.day.empty {
-    background-color: transparent;
-    border: none;
-}
-/* --- TERMIN BEREICH STYLING --- */
-
-.event-section {
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #333;
-}
-
-.event-section h4 {
-    margin: 0 0 10px 0;
-    color: #007bff;
-    font-size: 16px;
-}
-
-.event-input-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-#event-input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background-color: #1a1a1a;
-    color: white;
-}
-
-.event-input-container button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#event-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#event-list li {
-    background-color: #1a1a1a;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-}
-
-/* Ausgewählter Tag im Kalender bekommt einen Rahmen */
-.day.selected {
-    border-color: #007bff !important;
-    background-color: #222;
-}
-/* --- GYM PLANER STYLING --- */
-
-.workout-tracker-card {
-    background-color: #1a1a1a;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #333;
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
     margin-bottom: 20px;
-    text-align: center;
 }
 
-.workout-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
+.calendar-day {
+    aspect-ratio: 1;
+    background-color: #202430;
     border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    transition: all 0.2s;
 }
 
-.workout-btn.start {
-    background-color: #28a745;
+.calendar-day:hover {
+    background-color: #2b3042;
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-day.selected {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.15);
+    color: #007bff;
+    font-weight: 700;
+}
+
+.calendar-day.has-event {
+    background-color: #0056b3;
     color: white;
 }
 
-.workout-btn.start:hover {
-    background-color: #218838;
+/* --- GYM & JOURNAL SPECIALS --- */
+.workout-btn.start {
+    background: #28a745;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 14px;
 }
 
 .workout-btn.stop {
-    background-color: #dc3545;
-    color: white;
-}
-
-.workout-btn.stop:hover {
-    background-color: #c82333;
-}
-
-.workout-timer {
-    margin-top: 10px;
-    font-size: 15px;
-    color: #aaa;
-    display: none; /* Erst sichtbar, wenn Workout gestartet wird */
-}
-
-.workout-timer span {
-    color: #007bff;
-    font-weight: bold;
-}
-
-.gym-input-section {
-    background-color: #1a1a1a;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    margin-bottom: 20px;
-}
-
-.gym-input-section label {
-    display: block;
-    font-size: 14px;
-    color: #aaa;
-    margin-bottom: 8px;
-}
-
-#exercise-select {
+    background: #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
     width: 100%;
-    padding: 10px;
-    background-color: #222;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 8px;
-    font-size: 15px;
     margin-bottom: 12px;
-    outline: none;
-}
-
-.gym-input-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-    width: 100%; /* Hält alles im Kasten */
-}
-
-.gym-input-row input {
-    flex: 1;
-    min-width: 0; /* WICHTIG: Verhindert, dass das Feld nach rechts ausbricht! */
-    box-sizing: border-box; /* Rechnet Padding in die Breite ein */
-    padding: 10px;
-    background-color: #222;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-}
-
-.add-set-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background 0.2s;
-}
-
-.add-set-btn:hover {
-    background-color: #0056b3;
-}
-
-.gym-history-section h3 {
-    margin-top: 0;
-    font-size: 16px;
-    color: #ddd;
-    margin-bottom: 12px;
-}
-
-#gym-log-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#gym-log-list li {
-    background-color: #1a1a1a;
-    padding: 10px 14px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-}
-
-.gym-log-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.gym-log-exercise {
-    font-weight: bold;
-    color: #007bff;
-}
-
-.gym-log-details {
-    color: #bbb;
-    font-size: 13px;
-}
-/* --- JOURNAL STYLING --- */
-
-.journal-form {
-    background-color: #1a1a1a;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    margin-bottom: 25px;
-}
-
-.journal-field {
-    margin-bottom: 15px;
-}
-
-.journal-field label {
-    display: block;
-    font-size: 13px;
-    color: #007bff;
-    font-weight: bold;
-    margin-bottom: 6px;
-}
-
-.journal-field input[type="date"],
-.journal-field textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 10px;
-    background-color: #222;
-    color: white;
-    border: 1px solid #444;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    resize: vertical;
-}
-
-/* Emoji Buttons */
-.mood-selector {
-    display: flex;
-    gap: 10px;
+    padding: 14px;
 }
 
 .mood-btn {
     flex: 1;
+    background: #202430;
+    font-size: 22px;
     padding: 10px;
-    background-color: #222;
-    border: 1px solid #444;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s ease;
-}
-
-.mood-btn:hover {
-    border-color: #007bff;
+    border: 1px solid #2b3042;
 }
 
 .mood-btn.selected {
-    background-color: #007bff;
-    border-color: #007bff;
-    font-weight: bold;
-}
-
-/* Abschicken Button */
-.submit-journal-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.submit-journal-btn:hover {
-    background-color: #218838;
-}
-
-/* Sammlung Einträge */
-.journal-history h3 {
-    font-size: 16px;
-    color: #ddd;
-    margin-bottom: 12px;
+    border: 2px solid #007bff;
+    background: rgba(0, 123, 255, 0.2);
 }
 
 .journal-card {
-    background-color: #1a1a1a;
+    background: #202430;
+    padding: 14px;
     border-radius: 12px;
-    border: 1px solid #333;
-    padding: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
+    border: 1px solid #2b3042;
 }
 
 .journal-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #333;
-    padding-bottom: 8px;
     margin-bottom: 10px;
-}
-
-.journal-card-date {
-    font-weight: bold;
+    font-weight: 700;
     color: #007bff;
+    font-size: 14px;
 }
 
-.journal-card-mood {
-    background-color: #2a2a2a;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-}
-
-.journal-card-section {
-    margin-bottom: 8px;
+.journal-card p {
     font-size: 13px;
-    color: #ccc;
-    line-height: 1.4;
-}
-
-.journal-card-section strong {
-    color: #aaa;
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: #c2c9d6;
 }
