@@ -2,49 +2,56 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    background-color: #121212;
-    color: #ffffff;
+    background: #0f1015;
+    color: #e0e6ed;
     display: flex;
     justify-content: center;
-    padding: 15px;
+    padding: 20px 10px;
+    min-height: 100vh;
 }
 
 .app-container {
     width: 100%;
-    max-width: 450px;
-    background-color: #1e1e1e;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    max-width: 440px;
+    background: #181a20;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    border: 1px solid #2a2d3d;
 }
 
+/* --- TABS --- */
 .tab-bar {
     display: flex;
-    gap: 5px;
-    margin-bottom: 20px;
-    background: #2a2a2a;
-    padding: 5px;
-    border-radius: 8px;
+    gap: 6px;
+    margin-bottom: 22px;
+    background: #101216;
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid #222634;
 }
 
 .tab-btn {
     flex: 1;
-    padding: 10px;
+    padding: 12px 6px;
     border: none;
     background: transparent;
-    color: #888;
-    border-radius: 6px;
-    font-weight: bold;
+    color: #7a829e;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
     cursor: pointer;
+    transition: all 0.25s ease;
 }
 
 .tab-btn.active {
-    background: #3a3a3a;
+    background: #007bff;
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.35);
 }
 
 .tab-content {
@@ -56,94 +63,145 @@ body {
 }
 
 h2 {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
 }
 
+/* --- INPUTS & BUTTONS --- */
 .input-container {
     display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 18px;
 }
 
-input, select {
+input, select, textarea {
     flex: 1;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #333;
-    background: #222;
-    color: white;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2c3040;
+    background: #101216;
+    color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
 }
 
 button {
-    padding: 10px 15px;
+    padding: 12px 18px;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     background: #007bff;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
+button:active {
+    transform: scale(0.96);
+}
+
+/* --- LISTENTREFFER & CARDS --- */
 ul {
     list-style: none;
 }
 
 li {
-    background: #282828;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
+    background: #202430;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #2b3042;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 li.completed span {
     text-decoration: line-through;
-    color: #666;
+    color: #5d667e;
 }
 
 .delete-btn {
-    background: transparent;
+    background: rgba(255, 77, 77, 0.1);
     color: #ff4d4d;
-    padding: 2px 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    border: 1px solid rgba(255, 77, 77, 0.2);
 }
 
-/* Kalender Styling */
+.delete-btn:hover {
+    background: #ff4d4d;
+    color: white;
+}
+
+/* --- KALENDER DESIGN --- */
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #282828;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background: #202430;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #2b3042;
+}
+
+.calendar-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.calendar-header button {
+    padding: 6px 12px;
+    background: #101216;
+    border: 1px solid #2c3040;
 }
 
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    font-weight: bold;
-    color: #888;
+    font-weight: 700;
+    color: #5d667e;
     margin-bottom: 8px;
+    font-size: 12px;
 }
 
 .calendar-days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 6px;
     margin-bottom: 20px;
 }
 
 .calendar-day {
     aspect-ratio: 1;
-    background-color: #282828;
-    border-radius: 6px;
+    background-color: #202430;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #2b3042;
 }
 
 .calendar-day.empty {
@@ -152,47 +210,66 @@ li.completed span {
 }
 
 .calendar-day.selected {
-    border: 2px solid #007bff;
-    font-weight: bold;
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.15);
+    color: #007bff;
+    font-weight: 700;
 }
 
 .calendar-day.has-event {
     background-color: #0056b3;
+    color: white;
 }
 
+/* --- GYM & JOURNAL SPECIALS --- */
 .workout-btn.start {
     background: #28a745;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding: 14px;
 }
 
 .workout-btn.stop {
     background: #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding: 14px;
 }
 
 .mood-btn {
     flex: 1;
-    background: #282828;
-    font-size: 20px;
+    background: #202430;
+    font-size: 22px;
+    padding: 10px;
+    border: 1px solid #2b3042;
 }
 
 .mood-btn.selected {
     border: 2px solid #007bff;
+    background: rgba(0, 123, 255, 0.2);
 }
 
 .journal-card {
-    background: #282828;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    background: #202430;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #2b3042;
 }
 
 .journal-card-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: bold;
+    margin-bottom: 10px;
+    font-weight: 700;
     color: #007bff;
+    font-size: 14px;
+}
+
+.journal-card p {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #c2c9d6;
 }
