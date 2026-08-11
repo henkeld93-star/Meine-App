@@ -27,27 +27,28 @@
             <ul id="todo-list"></ul>
         </div>
 
-        <!-- 2. Raum: Kalender -->
-        <div id="calendar-tab" class="tab-content">
+       <!-- 2. Raum: Kalender -->
+        <div id="kalender-tab" class="tab-content">
             <h2>Kalender</h2>
-            
+
             <div class="calendar-header">
-                <button id="prev-month" onclick="changeMonth(-1)">❮</button>
-                <h3 id="month-year-display"></h3>
-                <button id="next-month" onclick="changeMonth(1)">❯</button>
+                <button onclick="prevMonth()">❮</button>
+                <h3 id="month-year-display">Monat Jahr</h3>
+                <button onclick="nextMonth()">❯</button>
             </div>
 
-            <div class="weekdays-grid">
+            <div class="calendar-weekdays">
                 <div>Mo</div><div>Di</div><div>Mi</div><div>Do</div>
                 <div>Fr</div><div>Sa</div><div>So</div>
             </div>
 
-            <div id="calendar-days" class="days-grid"></div>
+            <!-- Hier werden die Tage vom JS gezeichnet -->
+            <div id="calendar-days" class="calendar-days-grid"></div>
 
-            <div id="event-section" class="event-section">
-                <h4 id="selected-date-text">Tag auswählen</h4>
-                <div class="event-input-container">
-                    <input type="text" id="event-input" placeholder="Neuer Termin...">
+            <div class="event-section">
+                <h4 id="selected-day-label">Tag auswählen</h4>
+                <div class="input-container">
+                    <input type="text" id="event-title" placeholder="Neuer Termin...">
                     <button onclick="addEvent()">+</button>
                 </div>
                 <ul id="event-list"></ul>
