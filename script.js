@@ -1,197 +1,154 @@
-// Diese Funktion schaltet zwischen den Räumen um
-function openTab(tabId) {
-    // 1. Suche alle Räume und nimm ihnen das Wort "active" weg (versteckt sie)
-    let contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => {
-        content.classList.remove('active');
-    });
+// --- INITIALISIERUNG / DATEN LADEN ---
+let todos = JSON.parse(localStorage.getItem('my_todos')) || [];
+let events = JSON.parse(localStorage.getItem('my_events')) || [];
+let gymLogs = JSON.parse(localStorage.getItem('my_gymLogs')) || [];
+let journalEntries = JSON.parse(localStorage.getItem('my_journalEntries')) || [];
 
-    // 2. Gib NUR dem angeklickten Raum das Wort "active" (macht ihn sichtbar)
+let workoutActive = false;
+let workoutTimerInterval = null;
+let workoutSeconds = 0;
+let selectedMood = "";
+
+// Beim Laden der Seite alle gespeicherten Daten anzeigen
+document.addEventListener("DOMContentLoaded", () => {
+    renderTodos();
+    renderEvents();
+    renderGymLogs();
+    renderJournalEntries();
+
+    let dateInput = document.getElementById('journal-date');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+    }
+});
+
+// --- TABS WECHSELN ---
+function openTab(tabId) {
+    let contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => content.classList.remove('active'));
+
+    let buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+
     document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
 }
-// Funktion zum Hinzufügen einer Aufgabe
+
+// --- 1. TO-DO LOGIK ---
 function addTodo() {
     let input = document.getElementById('todo-input');
     let text = input.value.trim();
 
     if (text !== "") {
-        let ul = document.getElementById('todo-list');
-        let li = document.createElement('li');
-        
-        // 1. Die Checkbox erstellen
-        let checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'todo-checkbox';
-        
-        // 2. Der Text der Aufgabe
-        let span = document.createElement('span');
-        span.textContent = text;
-        
-        // Wenn man die Checkbox anklickt -> Text durchstreichen/normal machen
-        checkbox.onchange = function() {
-            if (checkbox.checked) {
-                span.classList.add('completed');
-            } else {
-                span.classList.remove('completed');
-            }
-        };
-
-        // 3. Löschen-Button (X)
-        let deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '✖';
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.onclick = function() {
-            li.remove();
-        };
-
-        // Einen kleinen Kasten für Checkbox + Text zusammen bauen
-        let leftContainer = document.createElement('div');
-        leftContainer.className = 'todo-left';
-        leftContainer.appendChild(checkbox);
-        leftContainer.appendChild(span);
-
-        // Alles ins Li-Element packen
-        li.appendChild(leftContainer);
-        li.appendChild(deleteBtn);
-        ul.appendChild(li);
-
-        // Eingabefeld leeren
+        todos.push({ text: text, completed: false });
         input.value = "";
-    }
-}
-// --- KALENDER LOGIK ---
-let currentDate = new Date(); // Speichert das aktuelle Datum
-let selectedDateKey = "";     // Speichert den aktuell geklickten Tag (z.B. "2026-8-11")
-let events = {};              // Speichert alle Termine im Speicher
-
-function renderCalendar() {
-    let year = currentDate.getFullYear();
-    let month = currentDate.getMonth();
-
-    // Namen der Monate auf Deutsch
-    let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni",
-                      "Juli", "August", "September", "Oktober", "November", "Dezember"];
-
-    // Monat und Jahr oben anzeigen
-    document.getElementById('month-year-display').textContent = `${monthNames[month]} ${year}`;
-
-    let daysContainer = document.getElementById('calendar-days');
-    daysContainer.innerHTML = ""; // Vorherige Tage löschen
-
-    // Erster Tag des Monats & Anzahl der Tage herausfinden
-    let firstDay = new Date(year, month, 1).getDay();
-    let totalDays = new Date(year, month + 1, 0).getDate();
-
-    // In JS startet der Sonntag bei 0. Umrechnen für Mo-So (Mo = 0, So = 6)
-    let startDay = firstDay === 0 ? 6 : firstDay - 1;
-
-    // Leere Felder am Anfang auffüllen
-    for (let i = 0; i < startDay; i++) {
-        let emptyDiv = document.createElement('div');
-        emptyDiv.className = 'day empty';
-        daysContainer.appendChild(emptyDiv);
-    }
-
-    let today = new Date();
-
-    // Alle Tage des Monats erstellen
-    for (let day = 1; day <= totalDays; day++) {
-        let dayDiv = document.createElement('div');
-        dayDiv.className = 'day';
-        dayDiv.textContent = day;
-
-        let dateKey = `${year}-${month}-${day}`;
-
-        // Heutigen Tag markieren
-        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-            dayDiv.classList.add('today');
-        }
-
-        // Wenn dieser Tag ausgewählt ist
-        if (selectedDateKey === dateKey) {
-            dayDiv.classList.add('selected');
-        }
-
-        // Klick auf ein Datum
-        dayDiv.onclick = function() {
-            selectDate(year, month, day, dateKey);
-        };
-
-        daysContainer.appendChild(dayDiv);
+        saveAndRenderTodos();
     }
 }
 
-// Tag auswählen
-function selectDate(year, month, day, dateKey) {
-    selectedDateKey = dateKey;
-    let monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni",
-                      "Juli", "August", "September", "Oktober", "November", "Dezember"];
-
-    document.getElementById('selected-date-text').textContent = `Termine am ${day}. ${monthNames[month]} ${year}`;
-    renderCalendar();
-    showEvents();
+function toggleTodo(index) {
+    todos[index].completed = !todos[index].completed;
+    saveAndRenderTodos();
 }
 
-// Termin hinzufügen
-function addEvent() {
-    let input = document.getElementById('event-input');
-    let text = input.value.trim();
-
-    if (text !== "" && selectedDateKey !== "") {
-        if (!events[selectedDateKey]) {
-            events[selectedDateKey] = [];
-        }
-        events[selectedDateKey].push(text);
-        input.value = "";
-        showEvents();
-    }
+function deleteTodo(index) {
+    todos.splice(index, 1);
+    saveAndRenderTodos();
 }
 
-// Termine des Tages anzeigen
-function showEvents() {
-    let list = document.getElementById('event-list');
+function saveAndRenderTodos() {
+    localStorage.setItem('my_todos', JSON.stringify(todos));
+    renderTodos();
+}
+
+function renderTodos() {
+    let list = document.getElementById('todo-list');
+    if (!list) return;
     list.innerHTML = "";
 
-    if (events[selectedDateKey]) {
-        events[selectedDateKey].forEach((evt, index) => {
-            let li = document.createElement('li');
-            li.textContent = evt;
+    todos.forEach((todo, index) => {
+        let li = document.createElement('li');
+        if (todo.completed) li.classList.add('completed');
 
-            let delBtn = document.createElement('button');
-            delBtn.textContent = 'X';
-            delBtn.className = 'delete-btn';
-            delBtn.onclick = function() {
-                events[selectedDateKey].splice(index, 1);
-                showEvents();
-            };
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.onclick = () => toggleTodo(index);
 
-            li.appendChild(delBtn);
-            list.appendChild(li);
-        });
+        let span = document.createElement('span');
+        span.textContent = todo.text;
+
+        let delBtn = document.createElement('button');
+        delBtn.textContent = '✖';
+        delBtn.className = 'delete-btn';
+        delBtn.onclick = () => deleteTodo(index);
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+    });
+}
+
+// --- 2. KALENDER LOGIK ---
+function addEvent() {
+    let date = document.getElementById('event-date').value;
+    let title = document.getElementById('event-title').value.trim();
+
+    if (date === "" || title === "") {
+        alert("Bitte Datum und Titel eingeben!");
+        return;
     }
+
+    events.push({ date: date, title: title });
+    document.getElementById('event-date').value = "";
+    document.getElementById('event-title').value = "";
+
+    saveAndRenderEvents();
 }
 
-// Monate vor und zurück schalten
-function changeMonth(direction) {
-    currentDate.setMonth(currentDate.getMonth() + direction);
-    renderCalendar();
+function deleteEvent(index) {
+    events.splice(index, 1);
+    saveAndRenderEvents();
 }
 
-// Kalender direkt beim Laden der Seite aufbauen
-renderCalendar();
-// --- GYM PLANER LOGIK ---
-let workoutActive = false;
-let workoutTimerInterval = null;
-let workoutSeconds = 0;
-let gymLogs = [];
+function saveAndRenderEvents() {
+    localStorage.setItem('my_events', JSON.stringify(events));
+    renderEvents();
+}
 
-// Workout Starten / Stoppen
+function renderEvents() {
+    let list = document.getElementById('event-list');
+    if (!list) return;
+    list.innerHTML = "";
+
+    events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    events.forEach((eventItem, index) => {
+        let li = document.createElement('li');
+
+        let formattedDate = new Date(eventItem.date).toLocaleDateString('de-DE');
+
+        let span = document.createElement('span');
+        span.textContent = `${formattedDate}: ${eventItem.title}`;
+
+        let delBtn = document.createElement('button');
+        delBtn.textContent = '✖';
+        delBtn.className = 'delete-btn';
+        delBtn.onclick = () => deleteEvent(index);
+
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+    });
+}
+
+// --- 3. GYM PLANER LOGIK ---
 function toggleWorkout() {
     let btn = document.getElementById('workout-toggle-btn');
     let timerDiv = document.getElementById('workout-timer');
 
     if (!workoutActive) {
-        // Starten
         workoutActive = true;
         btn.textContent = 'Workout Beenden ⏹️';
         btn.className = 'workout-btn stop';
@@ -205,7 +162,6 @@ function toggleWorkout() {
             updateTimerDisplay();
         }, 1000);
     } else {
-        // Stoppen
         workoutActive = false;
         btn.textContent = 'Workout Starten 🏋️';
         btn.className = 'workout-btn start';
@@ -217,7 +173,8 @@ function toggleWorkout() {
 }
 
 function updateTimerDisplay() {
-    document.getElementById('timer-display').textContent = formatTime(workoutSeconds);
+    let timerDisplay = document.getElementById('timer-display');
+    if (timerDisplay) timerDisplay.textContent = formatTime(workoutSeconds);
 }
 
 function formatTime(totalSeconds) {
@@ -226,7 +183,6 @@ function formatTime(totalSeconds) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-// Satz hinzufügen
 function addGymSet() {
     let exercise = document.getElementById('exercise-select').value;
     let weight = document.getElementById('gym-weight').value;
@@ -244,18 +200,27 @@ function addGymSet() {
         date: new Date().toLocaleDateString('de-DE')
     };
 
-    gymLogs.unshift(logEntry); // Neueste Einträge nach oben
+    gymLogs.unshift(logEntry);
 
-    // Eingabefelder leeren
     document.getElementById('gym-weight').value = "";
     document.getElementById('gym-reps').value = "";
 
+    saveAndRenderGymLogs();
+}
+
+function deleteGymLog(index) {
+    gymLogs.splice(index, 1);
+    saveAndRenderGymLogs();
+}
+
+function saveAndRenderGymLogs() {
+    localStorage.setItem('my_gymLogs', JSON.stringify(gymLogs));
     renderGymLogs();
 }
 
-// Verlauf anzeigen
 function renderGymLogs() {
     let list = document.getElementById('gym-log-list');
+    if (!list) return;
     list.innerHTML = "";
 
     gymLogs.forEach((log, index) => {
@@ -278,10 +243,7 @@ function renderGymLogs() {
         let delBtn = document.createElement('button');
         delBtn.textContent = '✖';
         delBtn.className = 'delete-btn';
-        delBtn.onclick = function() {
-            gymLogs.splice(index, 1);
-            renderGymLogs();
-        };
+        delBtn.onclick = () => deleteGymLog(index);
 
         li.appendChild(infoDiv);
         li.appendChild(delBtn);
@@ -289,19 +251,7 @@ function renderGymLogs() {
     });
 }
 
-// --- JOURNAL LOGIK ---
-let selectedMood = "";
-let journalEntries = [];
-
-// Heutiges Datum automatisch im Datumsfeld eintragen
-document.addEventListener("DOMContentLoaded", () => {
-    let dateInput = document.getElementById('journal-date');
-    if (dateInput) {
-        dateInput.valueAsDate = new Date();
-    }
-});
-
-// Stimmung auswählen
+// --- 4. JOURNAL LOGIK ---
 function selectMood(mood, btnElement) {
     selectedMood = mood;
     let buttons = document.querySelectorAll('.mood-btn');
@@ -309,7 +259,6 @@ function selectMood(mood, btnElement) {
     btnElement.classList.add('selected');
 }
 
-// Eintrag speichern
 function saveJournalEntry() {
     let date = document.getElementById('journal-date').value;
     let notes = document.getElementById('journal-notes').value.trim();
@@ -329,21 +278,30 @@ function saveJournalEntry() {
         mood: selectedMood || "Keine Stimmung"
     };
 
-    journalEntries.unshift(entry); // Neuesten Eintrag oben anzeigen
+    journalEntries.unshift(entry);
 
-    // Felder leeren
     document.getElementById('journal-notes').value = "";
     document.getElementById('journal-grateful').value = "";
     document.getElementById('journal-goals').value = "";
     selectedMood = "";
     document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
 
+    saveAndRenderJournal();
+}
+
+function deleteJournalEntry(index) {
+    journalEntries.splice(index, 1);
+    saveAndRenderJournal();
+}
+
+function saveAndRenderJournal() {
+    localStorage.setItem('my_journalEntries', JSON.stringify(journalEntries));
     renderJournalEntries();
 }
 
-// Sammlung anzeigen
 function renderJournalEntries() {
     let container = document.getElementById('journal-entries-container');
+    if (!container) return;
     container.innerHTML = "";
 
     journalEntries.forEach((entry, index) => {
@@ -369,15 +327,11 @@ function renderJournalEntries() {
             </div>
         `;
 
-        // Löschen-Button für die Karte
         let delBtn = document.createElement('button');
         delBtn.textContent = 'Eintrag Löschen ✖';
         delBtn.className = 'delete-btn';
         delBtn.style.marginTop = '10px';
-        delBtn.onclick = function() {
-            journalEntries.splice(index, 1);
-            renderJournalEntries();
-        };
+        delBtn.onclick = () => deleteJournalEntry(index);
 
         card.appendChild(delBtn);
         container.appendChild(card);
